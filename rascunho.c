@@ -14,42 +14,42 @@ int main() {
             votosValidos++;
         }
 
-        int maisVotado = votosPrimeiroTurno[1]; // Inicialize com o primeiro candidato
+        int maisVotadoPrimeiroTurno = votosPrimeiroTurno[1];
+        int vencedorPrimeiroTurno = 1;
+
         for (int i = 2; i <= C; i++) {
-            if (votosPrimeiroTurno[i] > maisVotado) {
-                maisVotado = votosPrimeiroTurno[i];
+            if (votosPrimeiroTurno[i] > maisVotadoPrimeiroTurno) {
+                maisVotadoPrimeiroTurno = votosPrimeiroTurno[i];
+                vencedorPrimeiroTurno = i;
             }
         }
 
-        if (maisVotado >= 0.50 * votosValidos) {
-            for (int i = 1; i <= C; i++) {
-                if (votosPrimeiroTurno[i] == maisVotado) {
-                    printf("%d %.2lf\n", i, (votosPrimeiroTurno[i] * 100.0) / votosValidos);
-                    break;
-                }
-            }
+        double porcentagemVotosPrimeiroTurno = (maisVotadoPrimeiroTurno * 100.0) / votosValidos;
+
+        if (porcentagemVotosPrimeiroTurno >= 50.0) {
+            printf("%d %.2lf\n", vencedorPrimeiroTurno, porcentagemVotosPrimeiroTurno);
         } else {
             int votosSegundoTurno[100] = {0};
-            int segundoMaisVotado = 0;
+            int maisVotadoSegundoTurno = 0;
 
-            for (int i = 1; i <= V; i++) {
-                if (op2 == maisVotado || op2 == segundoMaisVotado) {
+            for (int i = 0; i < V; i++) {
+                if (op2 == vencedorPrimeiroTurno || op2 == maisVotadoSegundoTurno) {
                     votosSegundoTurno[op2]++;
                 }
-                if (op3 == maisVotado || op3 == segundoMaisVotado) {
+                if (op3 == vencedorPrimeiroTurno || op3 == maisVotadoSegundoTurno) {
                     votosSegundoTurno[op3]++;
                 }
             }
 
             for (int i = 1; i <= C; i++) {
-                if (votosSegundoTurno[i] > segundoMaisVotado) {
-                    segundoMaisVotado = votosSegundoTurno[i];
+                if (votosSegundoTurno[i] > maisVotadoSegundoTurno) {
+                    maisVotadoSegundoTurno = votosSegundoTurno[i];
                 }
             }
 
             if (votosValidos > 0) {
                 for (int i = 1; i <= C; i++) {
-                    if (votosSegundoTurno[i] == segundoMaisVotado) {
+                    if (votosSegundoTurno[i] == maisVotadoSegundoTurno) {
                         printf("%d %.2lf\n", i, (votosSegundoTurno[i] * 100.0) / votosValidos);
                         break;
                     }
@@ -62,3 +62,4 @@ int main() {
 
     return 0;
 }
+
