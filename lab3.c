@@ -105,3 +105,63 @@ int main(){
     free(raiz);
     return 0;
 }
+
+#include <stdio.h>
+
+int main() {
+    int V, C;
+    scanf("%d %d", &V, &C);
+
+    int votos[C + 1] = {0}; // Inicializa o array de votos para cada candidato
+
+    int primeiroTurno = 0;
+    int segundoTurno = 0;
+
+    // Processa os votos dos eleitores
+    for (int i = 0; i < V; i++) {
+        int voto1, voto2, voto3;
+        scanf("%d %d %d", &voto1, &voto2, &voto3);
+
+        // Verifica se o voto em primeira opção é válido
+        if (voto1 >= 1 && voto1 <= C) {
+            votos[voto1]++;
+            // Verifica se alguém atingiu 50% dos votos válidos
+            if (votos[voto1] * 2 > V) {
+                primeiroTurno = voto1;
+                break;
+            }
+        }
+    }
+
+    // Se não houver vencedor no primeiro turno
+    if (primeiroTurno == 0) {
+        int votosValidosPrimeiroTurno = 0;
+        for (int i = 1; i <= C; i++) {
+            // Verifica os candidatos que vão para o segundo turno
+            if (votos[i] > votos[segundoTurno]) {
+                segundoTurno = i;
+            }
+            votosValidosPrimeiroTurno += votos[i];
+        }
+        // Verifica se não houve votos válidos no primeiro turno
+        if (votosValidosPrimeiroTurno == 0) {
+            printf("0\n");
+            return 0;
+        }
+    }
+
+    // Calcula a porcentagem de votos do primeiro turno
+    double porcentagemPrimeiroTurno = (double)votos[primeiroTurno] / V * 100;
+
+    // Imprime os resultados
+    printf("%d %.2lf\n", primeiroTurno, porcentagemPrimeiroTurno);
+
+    // Se houver segundo turno, calcula a porcentagem de votos do segundo turno
+    if (segundoTurno != 0) {
+        double porcentagemSegundoTurno = (double)votos[segundoTurno] / V * 100;
+        printf("%d %.2lf\n", segundoTurno, porcentagemSegundoTurno);
+    }
+
+    return 0;
+}
+
