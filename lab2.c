@@ -1,50 +1,82 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-// Estrutura para representar um comprador
+#define MAX 1000000
+
 typedef struct {
     int senha;
-    int valor_ofertado;
+    int valor;
 } Comprador;
+
+Comprador fila[MAX];
+int tamanho = 0;
+
+void troca(Comprador *a, Comprador *b) {
+    Comprador temp = *a;
+    *a = *b;
+    *b = temp;
+}
+
+void inserir(int senha, int valor) {
+    Comprador novo;
+    novo.senha = senha;
+    novo.valor = valor;
+
+    fila[tamanho] = novo;
+    int atual = tamanho;
+
+    while (atual > 0 && fila[atual].valor > fila[(atual - 1) / 2].valor) {
+        troca(&fila[atual], &fila[(atual - 1) / 2]);
+        atual = (atual - 1) / 2;
+    }
+
+    tamanho++;
+}
+
+int remover() {
+    if (tamanho == 0) {
+        return 0; 
+    }
+    int senha = fila[0].senha;
+    fila[0] = fila[tamanho - 1];
+    tamanho--;
+    int atual = 0;
+    while (1) {
+        int e = 2 * atual + 1;
+        int d = 2 * atual + 2;
+        int maior = atual;
+        if (e < tamanho && (fila[e].valor > fila[maior].valor || (fila[e].valor == fila[maior].valor && fila[e].senha < fila[maior].senha))) {
+            maior = e;
+        }
+        if (d < tamanho && (fila[d].valor > fila[maior].valor || (fila[d].valor == fila[maior].valor && fila[d].senha < fila[maior].senha))) {
+            maior = d;
+        }
+        if (maior != atual) {
+            troca(&fila[atual], &fila[maior]);
+            atual = maior;
+        } else {
+            break;
+        }
+    }
+    return senha;
+}
 
 int main() {
     char operacao;
-    int valor;
-    int senha_atual = 1;
-    int max_comprador = 0;
-    Comprador *fila_compradores = malloc(sizeof(Comprador) * 1000000);
-
+    int senha = 1;
     while (1) {
         scanf(" %c", &operacao);
         if (operacao == 'c') {
+            int valor;
             scanf("%d", &valor);
-            fila_compradores[max_comprador].senha = senha_atual++;
-            fila_compradores[max_comprador].valor_ofertado = valor;
-            max_comprador++;
+            inserir(senha, valor);
+            senha++;
         } else if (operacao == 'v') {
-            int max_valor = 0;
-            int idx_max_valor = -1;
-            for (int i = 0; i < max_comprador; i++) {
-                if (fila_compradores[i].valor_ofertado > max_valor) {
-                    max_valor = fila_compradores[i].valor_ofertado;
-                    idx_max_valor = i;
-                }
-            }
-            if (idx_max_valor != -1) {
-                printf("%d\n", fila_compradores[idx_max_valor].senha);
-                // Remova o comprador da fila
-                for (int i = idx_max_valor; i < max_comprador - 1; i++) {
-                    fila_compradores[i] = fila_compradores[i + 1];
-                }
-                max_comprador--;
-            } else {
-                printf("0\n");
-            }
+            int senha_vendida = remover();
+            printf("%d\n", senha_vendida);
         } else if (operacao == 'f') {
             break;
         }
     }
-
-    free(fila_compradores);
     return 0;
 }
